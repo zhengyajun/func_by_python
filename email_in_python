@@ -1,0 +1,40 @@
+Purpose: 
+    利用python和第三方SMTP服务发送邮件
+Notice: 
+    1. 需要注意的是，如果使用qq邮箱这里的口令不是指邮箱密码，而是在qq邮箱设置中生成的一个专用的口令。
+    2. 很多服务器上是默认关闭了25端口的，确保你使用的端口是打开可用的，另外请确保打开该端口后的安全性。
+    3. 发送过于频繁且内容完全一样（建议内容和标题中加入变量），会被当做垃圾邮件过滤，在发送邮箱中可以找到。
+"""
+import os.path
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+class ErrorLogAlert:
+    def check_log(self):
+        pass
+    def send_email(self):
+        mail_host="smtp.qq.com"           # 设置服务器
+        mail_user="*********@qq.com"     # 用户名
+        mail_pass="*********"           # 口令(qq邮箱非密码)
+        sender = '*********@qq.com'
+        receivers = ['zhe*********il@163.com']   # 接收邮箱，可设置为你的QQ邮箱或者其他邮箱
+        message = MIMEText('您的日志中出现错误，请查看：{0}', 'plain', 'utf-8')    # 邮件正文内容
+        message['From'] = Header('**********@qq.com')                            # 邮件头信息
+        message['To'] = Header('zhe*********ail@163.com')                     # 邮件头信息
+        subject = 'test错误日志变动提醒！'               # 邮件标题
+        message['Subject'] = Header(subject, 'utf-8')
+        try:
+            smtpObj = smtplib.SMTP(mail_host)
+            smtpObj.connect(mail_host, 25)        # 25 为 SMTP 端口号  qq 465 587
+            smtpObj.starttls()
+            smtpObj.login(mail_user, mail_pass)
+            smtpObj.sendmail(sender, receivers, message.as_string())
+            print("邮件发送成功")
+            
+        except smtplib.SMTPException as e:
+            print("Error: 无法发送邮件")
+            print(e)
+        
+        
+notice = ErrorLogAlert()
+notice.send_email()
